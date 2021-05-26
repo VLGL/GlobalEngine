@@ -87,7 +87,8 @@ namespace GE
 
 	void GLWindow::setMoveCameraSignal(Shared<Camera> camera)
 	{
-		moveCameraSignal.connect(boost::bind(&Camera::move, camera, _1));
+		(void)camera;
+		//moveCameraSignal.connect(boost::bind(&Camera::move, camera, _1));
 	}
 
 	void GLWindow::emitMoveCameraSignal(const glm::vec3 & move)

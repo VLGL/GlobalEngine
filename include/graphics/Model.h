@@ -19,47 +19,47 @@ namespace GE
 			Model() = delete;
 			~Model();
 			Model(const float * vertexPositions,
-			      const uint    vertexCount,
-			      const uint * indexesData,
-			      const uint   indexesCount,
+			      const unsigned vertexCount,
+			      const unsigned * indexesData,
+			      const unsigned indexesCount,
 			      const float * textureCoordinates,
-			      const uint    textCoordsCount);
+			      const unsigned textCoordsCount);
 
 			void draw() const override;
 
 		private:
-			void storeDataToVBO(const uint attribIndex,
-			                    const uint size,
+			void storeDataToVBO(const unsigned attribIndex,
+			                    const unsigned size,
 			                    const float * data,
-			                    const uint dataCount);
-			void storeDataToIndexBuffer(const uint * indexesData,
-			                            const uint   indexesCount);
+			                    const unsigned dataCount);
+			void storeDataToIndexBuffer(const unsigned * indexesData,
+			                            const unsigned   indexesCount);
 
 
 		private:
 			std::vector<GLuint> m_vbos;
 			GLVertexArrayObject m_vao;
-			uint m_indexesCount { 0 };
+			unsigned m_indexesCount { 0 };
 	};
 
 	class Model::ModelBuilder
 	{
 		public:
 			ModelBuilder & addVertexBuffer(float * vertexPositions,
-			                               const uint vertexCount);
-			ModelBuilder & addIndexBuffer(uint * indexesData,
-			                              const uint indexesCount);
+			                               const unsigned vertexCount);
+			ModelBuilder & addIndexBuffer(unsigned * indexesData,
+			                              const unsigned indexesCount);
 			ModelBuilder & addTextureData(float * textureCoordinates,
-			                              const uint textCoordsCount);
+			                              const unsigned textCoordsCount);
 			[[nodiscard]] Unique<Model> build();
 
 		private:
 			float * m_vertexPositions    = nullptr;
 			float * m_textureCoordinates = nullptr;
-			uint  * m_indexesData        = nullptr;
-			uint m_vertexCount     { 0 };
-			uint m_indexesCount    { 0 };
-			uint m_textCoordsCount { 0 };
+			unsigned * m_indexesData     = nullptr;
+			unsigned m_vertexCount     { 0 };
+			unsigned m_indexesCount    { 0 };
+			unsigned m_textCoordsCount { 0 };
 	};
 
 } // GE
