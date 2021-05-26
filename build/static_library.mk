@@ -20,17 +20,10 @@ local_dirs_to_create += $(call create-out-dirs-structure,  \
                                $(LOCAL_MODULE_OUT_OBJ_DIR))
 
 all_dirs_to_create += $(local_dirs_to_create)
+local_dirs_to_include := $(call dirs-to-include, $(LOCAL_MODULE_INCLUDE_DIRS))
 
 local_cxxflags := $(LOCAL_MODULE_CXXFLAGS)
 local_cflags   := $(LOCAL_MODULE_CFLAGS)
-
-ifeq ($(local_cxxflags),)
-	local_cxxflags := $(DEFAULT_CXXFLAGS)
-endif
-
-ifeq ($(local_cflags),)
-	local_cflags := $(DEFAULT_CFLAGS)
-endif
 
 $(local_library): PRIVATE_OBJS := $(local_objs)
 
@@ -55,7 +48,5 @@ $(LOCAL_MODULE_OUT_OBJ_DIR)/%.o: %.c
 	         $(COMPILATION_MESSAGE), \
 	         $(CC) -c $(PRIVATE_INCLUDES) $(PRIVATE_DEPFLAGS) \
 	         $(PRIVATE_CFLAGS) $< -o $@)
-
-local_dirs_to_include := $(call dirs-to-include, $(LOCAL_MODULE_INCLUDE_DIRS))
 
 -include $(local_dep_files)

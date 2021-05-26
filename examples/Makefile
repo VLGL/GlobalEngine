@@ -9,5 +9,6 @@ LOCAL_MODULE_INCLUDE_DIRS  := $(INCLUDE_DIR) \
                               $(LOCAL_MODULE_SRC_PATH) \
                               $(EXTERNAL_DIR)/SOIL2/src/SOIL2/
 LOCAL_MODULE_LD_LIBS       := -lGlobalEngine $(DEFAULT_LD_LIBS)
+LOCAL_MODULE_CXXFLAGS      := $(DEFAULT_CXXFLAGS)
 
 include $(BUILD_EXECUTABLE)

@@ -11,5 +11,6 @@ LOCAL_MODULE_OBJS          := $(OBJECT_OUT_DIR)/external/SOIL2/src/SOIL2/image_D
                               $(OBJECT_OUT_DIR)/external/SOIL2/src/SOIL2/wfETC.o \
                               $(OBJECT_OUT_DIR)/external/SOIL2/src/SOIL2/SOIL2.o
 LOCAL_MODULE_DEPS          := $(STATIC_LIBS_OUT_DIR)/libSOIL2.a
+LOCAL_MODULE_CXXFLAGS      := $(DEFAULT_CXXFLAGS)
 
 include $(BUILD_STATIC_LIBRARY)

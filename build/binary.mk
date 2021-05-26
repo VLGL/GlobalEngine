@@ -7,15 +7,7 @@ local_dirs_to_include := $(call dirs-to-include, $(LOCAL_MODULE_INCLUDE_DIRS))
 
 local_cxxflags := $(LOCAL_MODULE_CXXFLAGS)
 
-ifeq ($(local_cxxflags),)
-	local_cxxflags := $(DEFAULT_CXXFLAGS)
-endif
-
 local_ld_libs  := $(LOCAL_MODULE_LD_LIBS)
-
-ifeq ($(local_ld_libs),)
-	local_ld_libs := $(DEFAULT_LD_LIBS)
-endif
 
 # Rule, which describes how to create executable file from cpp source.
 $(local_binary): PRIVATE_INCLUDES := $(local_dirs_to_include)
