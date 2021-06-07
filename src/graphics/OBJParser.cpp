@@ -3,157 +3,114 @@
 namespace GE
 {
 
-    void OBJParser::parseObj(const path & objPath)
-    {
-        if (!std::filesystem::exists(objPath))
-            throw std::runtime_error("The .obj filepath \"" + objPath.native() + "\" does not exist!");
+	Unique<Model> OBJParser::parseObj(const path & objPath)
+	{
+		if (!std::filesystem::exists(objPath))
+			throw std::runtime_error("The .obj filepath \"" + objPath.native() + "\" does not exist!");
 
-        parseObjImpl(objPath);
-    }
+		return parseObjImpl(objPath);
+	}
 
-	void OBJParser::parseObjImpl(const path & objPath)
-    {
-        std::ifstream file(objPath.native());
+	Unique<Model> OBJParser::parseObjImpl(const path & objPath)
+	{
+		std::ifstream file(objPath.native());
 
-        if (!file.is_open())
-            throw std::runtime_error(".obj file isn't open!");
+		if (!file.is_open())
+			throw std::runtime_error(".obj file isn't open!");
 
-        using VertexCoordinates = std::tuple<float, float, float>;
-        using Normals = std::tuple<float, float, float>;
-        using TextureUV = std::pair<float, float>;
-        using Indexes = uint;
+		std::vector<VertexCoordinates> vertexCoordsVec;
+		std::vector<TextureUV> texturesVec;
+		std::vector<Normals> normalsVec;
+		std::stringstream sstream;
+		std::string line, temp;
+		float x, y, z, u, v;
 
-        std::vector<VertexCoordinates> vertexCoordinates;
-        std::vector<TextureUV> textureUV;
-        std::vector<Normals> normals;
-        std::vector<Indexes> indexesData;
+		GLfloat* vertexCoordsArray = nullptr;
+		GLfloat* texturesArray     = nullptr;
+		GLuint*  indexesArray      = nullptr;
 
-        std::string line;
-        std::vector<std::string> tokens;
+		while (std::getline(file, line))
+		{
+			if (line.empty()) continue;
+			sstream.str(line);
 
-        float * vertexCoordinatesArray = nullptr;
-        float * textureCoordinatesArray = nullptr;
-        [[maybe_unused]] uint  * indexesArray = nullptr;
+			sstream >> temp;
+			if (temp == "v")
+			{
+				sstream >> x;
+				sstream >> y;
+				sstream >> z;
+				vertexCoordsVec.emplace_back(std::make_tuple(x, y, z));
+			}
+			else if (temp == "vt")
+			{
+				sstream >> u;
+				sstream >> v;
+				texturesVec.emplace_back(std::make_pair(u, v));
+			}
+			else if (temp == "vn")
+			{
+				sstream >> x;
+				sstream >> y;
+				sstream >> z;
+				normalsVec.emplace_back(std::make_tuple(x, y, z));
+			}
+			else if (temp == "f")
+			{
+				vertexCoordsArray = new GLfloat[vertexCoordsVec.size() * 3];
+				texturesArray = new GLfloat[texturesVec.size() * 2];
+				indexesArray  = new GLuint[texturesVec.size()];
 
-        while (std::getline(file, line))
-        {
-            boost::split(tokens, line, boost::is_any_of(" "), boost::algorithm::token_compress_on);
+				processVertex(line, vertexCoordsVec, texturesVec, vertexCoordsArray, texturesArray, indexesArray);
+				goto skip;
+			}
+		}
 
-            try
-            {
-                if (tokens[0] == "v")
-                {
-                    float x = std::stof(tokens[1]);
-                    float y = std::stof(tokens[2]);
-                    float z = std::stof(tokens[3]);
+		skip:
+		while (std::getline(file, line))
+			processVertex(line, vertexCoordsVec, texturesVec, vertexCoordsArray, texturesArray, indexesArray);
 
-                    VertexCoordinates v = std::make_tuple(x, y, z);
-                    vertexCoordinates.push_back(v);
-                }
-                else if (tokens[0] == "vt")
-                {
-                    float u = std::stof(tokens[1]);
-                    float v = std::stof(tokens[2]);
+		return Model::ModelBuilder()
+		       .addVertexBuffer(vertexCoordsArray, vertexCoordsVec.size() * 3)
+		       .addTextureData(texturesArray, texturesVec.size() * 2)
+		       .addIndexBuffer(indexesArray, vertexCoordsVec.size())
+		       .build();
+	}
 
-                    TextureUV vt = std::make_pair(u, v);
-                    textureUV.push_back(vt);
-                }
-                if (tokens[0] == "vn")
-                {
-                    float x = std::stof(tokens[1]);
-                    float y = std::stof(tokens[2]);
-                    float z = std::stof(tokens[3]);
+	void OBJParser::processVertex(const std::string& vertexLine,
+	                              const std::vector<VertexCoordinates>& vertexCoordsVec,
+	                              const std::vector<TextureUV>& texturesVec,
+	                              GLfloat* vertexCoordsArray,
+	                              GLfloat* texturesArray,
+	                              GLuint*  indexesArray)
+	{
+		static unsigned offset;
 
-                    Normals vn = std::make_tuple(x, y, z);
-                    normals.push_back(vn);
-                }
-                else if (tokens[0] == "f")
-                {
-                    const size_t VERTICES_ARRAY_SIZE = vertexCoordinates.size() * 3;
-                    vertexCoordinatesArray = new float[VERTICES_ARRAY_SIZE];
+		std::vector<std::string> vertex;
+		std::vector<std::string> values;
+		boost::split(vertex, vertexLine, boost::is_any_of(" "), boost::algorithm::token_compress_on);
 
-                    const size_t TEXTURES_ARRAY_SIZE = textureUV.size() * 2;
-                    textureCoordinatesArray = new float[TEXTURES_ARRAY_SIZE];
+		for (int i = 1; i <= 3; ++i)
+		{
+			boost::split(values, vertex[i], boost::is_any_of("/"), boost::algorithm::token_compress_on);
 
-                    if (vertexCoordinatesArray == nullptr or textureCoordinatesArray == nullptr)
-                        std::cout << "SUKA\n";
-            
-                    break;
-                }
-                else
-                    continue;
-            }
-            catch (const std::invalid_argument & e)
-            {
-                std::cerr << e.what() << '\n';
-            }
-            catch (const std::out_of_range & e)
-            {
-                std::cerr << e.what() << '\n';
-            }
-        }
+			auto vertexCoordIndex = static_cast<unsigned>(std::stoi(values[0])) - 1;
 
-        while (std::getline(file, line))
-        {
-            boost::split(tokens, line, boost::is_any_of(" "), boost::algorithm::token_compress_on);
+			indexesArray[offset] = vertexCoordIndex;
+			auto [x, y, z] = vertexCoordsVec[vertexCoordIndex];
 
-            try
-            {
-                if (tokens[0] == "f")
-                {
-                    std::vector<std::string> vertexAttribsString;
-                    boost::split(vertexAttribsString, tokens[1], boost::is_any_of("/"), boost::algorithm::token_compress_on);
+			vertexCoordsArray[offset * 3] = x;
+			vertexCoordsArray[offset * 3 + 1] = y;
+			vertexCoordsArray[offset * 3 + 2] = z;
 
-                    processVertex(vertexAttribsString, vertexCoordinates, textureUV,
-                                  normals, vertexCoordinatesArray, textureCoordinatesArray, indexesArray);
+			auto textureIndex = static_cast<unsigned>(std::stoi(values[1])) - 1;
+			auto [u, v] = texturesVec[textureIndex];
 
-                    //processVertex(vertexAttribsString, vertexCoordinates, textureUV,
-                    //              normals, vertexCoordinatesArray, textureCoordinatesArray, indexesArray);
-                }
+			texturesArray[offset * 2] = u;
+			texturesArray[offset * 2 + 1] = 1 - v;
 
-            }
-            catch (const std::invalid_argument & e)
-            {
-                std::cerr << e.what() << '\n';
-            }
-            catch (const std::out_of_range & e)
-            {
-                std::cerr << e.what() << '\n';
-            }
-        }
-
-        //for (size_t i = 0; i < VERTICES_ARRAY_SIZE; ++i)
-        //    std::cout << vertexCoordinatesArray[i] << std::endl;
-    }
-
-	void OBJParser::processVertex(const std::vector<std::string> & vertexStrings,
-			                      const std::vector<std::tuple<float,float,float>> & vertexVector,
-			                      const std::vector<std::pair<float,float>> & textureVector,
-			                      const std::vector<std::tuple<float,float,float>> & normalsVector,
-			                      float * vertexArray,
-			                      float * textureArray,
-			                      uint  * indexesArray)
-    {
-        (void)normalsVector;
-        (void)indexesArray;
-        (void)textureArray;
-        (void)textureVector;
-        static uint offset;
-
-        uint vertexIndex = static_cast<uint>(std::stoi(vertexStrings[0])) - 1;
-        auto [x, y, z] = vertexVector[vertexIndex];
-
-        vertexArray[offset * 3] = x;
-        vertexArray[offset * 3 + 1] = y;
-        vertexArray[offset * 3 + 2] = z;
-
-//        uint textureIndex = static_cast<uint>(std::stoi(vertexStrings[1])) - 1;
-//        auto [u, v] = textureVector[textureIndex];
-//
-//        textureArray[offset * 2] = u;
-//        textureArray[offset * 2 + 1] = 1 - v;
-
-        ++offset;
-    }
+			++offset;
+		}
+	}
 
 } // GE

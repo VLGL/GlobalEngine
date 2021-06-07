@@ -6,6 +6,7 @@
 #include <exception>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include <boost/algorithm/string.hpp>
 
@@ -15,21 +16,24 @@ namespace GE
 {
 
 	using path = std::filesystem::path;
+	using VertexCoordinates = std::tuple<float, float, float>;
+	using Normals = std::tuple<float, float, float>;
+	using TextureUV = std::pair<float, float>;
+	using Indexes = unsigned;
 
 	class OBJParser final
 	{
 		public:
-			static void parseObj(const path & objPath);
+			static Unique<Model> parseObj(const path & objPath);
 
 		private:
-			static void parseObjImpl(const path & objPath);
-			static void processVertex(const std::vector<std::string> & vertexStrings,
-			                          const std::vector<std::tuple<float,float,float>> & vertexVector,
-			                          const std::vector<std::pair<float,float>> & textureVector,
-			                          const std::vector<std::tuple<float,float,float>> & normalsVector,
-			                          float * vertexArray,
-			                          float * textureArrray,
-			                          uint  * indexesArray);
+			static Unique<Model> parseObjImpl(const path & objPath);
+			static void processVertex(const std::string& vertexLine,
+			                          const std::vector<VertexCoordinates>& vertexCoordsVec,
+			                          const std::vector<TextureUV>& texturesVec,
+			                          GLfloat* vertexCoordsArray,
+			                          GLfloat* texturesArray,
+			                          GLuint*  indexesArray);
 	};
 
 } // GE
