@@ -8,23 +8,9 @@ TestApplication::TestApplication(Unique<GlobalEngine> globalEngine) :
 
 void TestApplication::init()
 {
-	Shared<Shader> vshader = Shader::ShaderBuilder()
-		.setSource("examples/TestApplication/shaders/vertexShader.glsl")
-		.setValidationStrategy(createShared<ValidationDefaultStrategy>())
-		.setShaderType(ShaderType::VertexShader)
-		.build();
-
-	Shared<Shader> fshader = Shader::ShaderBuilder()
-		.setSource("examples/TestApplication/shaders/fragmentShader.glsl")
-		.setValidationStrategy(createShared<ValidationDefaultStrategy>())
-		.setShaderType(ShaderType::FragmentShader)
-		.build();
-
-	auto shaderProgram = createShared<ShaderProgram>();
-	shaderProgram->attachShader(vshader);
-	shaderProgram->attachShader(fshader);
-	shaderProgram->setValidationStrategy(createShared<ValidationDefaultStrategy>());
-	shaderProgram->compile();
+	Shared<IShader> shader =
+		ShaderCreator::createShader("examples/TestApplication/shaders/vertexShader.glsl",
+		                            "examples/TestApplication/shaders/fragmentShader.glsl");
 
 	float vertices[] =
 	{
@@ -60,7 +46,7 @@ void TestApplication::init()
 
 	auto cubeEntity =
 		createShared<Entity>(cubeTexturedModel,
-		                     shaderProgram,
+		                     shader,
 		                     glm::vec3(0.0f, 0.0f, -1.5f),
 		                     glm::vec3(0.f),
 		                     glm::vec3(1.f));

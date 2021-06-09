@@ -1,20 +1,26 @@
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
+#include "graphics/Entity.h"
+#include "graphics/GameScene.h"
 #include "graphics/OpenGL/GLRenderSystem.h"
 
 namespace GE
 {
 
 	void GLRenderSystem::render(const GameScene & gameScene,
-	                            const Camera    & camera)
+	                             [[maybe_unused]] const Camera & camera)
 	{
-		glm::mat4 viewMatrix = createViewMatrix(camera);
+		//glm::mat4 viewMatrix = createViewMatrix(camera);
 
 		auto & gameObjectsList = gameScene.getGameObjectsList();
 		for (const auto & gameObject : gameObjectsList)
 		{
 			auto entity = dynamic_cast<Entity*>(gameObject.get());
-			entity->getShaderProgram()->apply();
+			entity->getShader()->bind();
 
-			entity->getShaderProgram()->setViewMatrix(viewMatrix);
+			/*
+			entity->getShader()->setViewMatrix(viewMatrix);
 
 			auto translation = entity->getPosition();
 			auto rotation    = entity->getRotation();
@@ -24,11 +30,12 @@ namespace GE
 			                                     rotation,
 			                                     scaling);
 
-			entity->getShaderProgram()->setModelMatrix(modelMatrix);
+			entity->getShader()->setModelMatrix(modelMatrix);
+			*/
 
 			entity->draw();
 
-			entity->getShaderProgram()->unapply();
+			entity->getShader()->unbind();
 		}
 	}
 
@@ -73,14 +80,14 @@ namespace GE
 	{
 		auto & gameObjectsList = gameScene.getGameObjectsList();
 
-		glm::mat4 projectionMatrix = createProjectionMatrix();
+		//glm::mat4 projectionMatrix = createProjectionMatrix();
 
 		for (const auto & gameObject : gameObjectsList)
 		{
 			auto entity = dynamic_cast<Entity*>(gameObject.get());
-			entity->getShaderProgram()->apply();
-			entity->getShaderProgram()->setProjectionMatrix(projectionMatrix);
-			entity->getShaderProgram()->unapply();
+			entity->getShader()->bind();
+			//entity->getShader()->setProjectionMatrix(projectionMatrix);
+			entity->getShader()->unbind();
 		}
 	}
 

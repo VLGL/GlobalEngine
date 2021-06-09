@@ -11,7 +11,8 @@
 
 #include "graphics/Entity.h"
 #include "graphics/Camera.h"
-#include "graphics/ShaderProgram.h"
+#include "graphics/IShader.h"
+#include "graphics/ShaderCreator.h"
 #include "graphics/GameScene.h"
 #include "graphics/ValidationDefaultStrategy.h"
 #include "graphics/OpenGL/GLTexture.h"

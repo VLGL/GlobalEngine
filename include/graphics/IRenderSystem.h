@@ -6,9 +6,14 @@
 
 namespace GE
 {
-
 	class GameScene;
 	class Camera;
+
+	enum class RendererAPI : int8_t
+	{
+		UNDEFINED = -1,
+		OpenGL    =  0
+	};
 
 	class IRenderSystem
 	{
@@ -23,6 +28,10 @@ namespace GE
 			virtual glm::mat4 createProjectionMatrix() = 0;
 			virtual glm::mat4 createViewMatrix(const Camera & camera)  = 0;
 			virtual void prepareGameScene(const GameScene & gameScene) = 0;
+			static RendererAPI getRendererAPI() { return m_api; };
+
+		protected:
+			const static RendererAPI m_api { RendererAPI::OpenGL };
 	};
 
 } // GE

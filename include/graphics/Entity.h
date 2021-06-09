@@ -5,7 +5,7 @@
 #include "core/Memory.h"
 #include "graphics/IDrawable.h"
 #include "graphics/OpenGL/GLTexturedModel.h"
-#include "graphics/ShaderProgram.h"
+#include "graphics/IShader.h"
 #include "graphics/Camera.h"
 
 namespace GE
@@ -21,10 +21,10 @@ namespace GE
 			~Entity() = default;
 
 			Entity(Shared<GLTexturedModel> texturedModel,
-			       Shared<ShaderProgram> shaderProgram);
+			       Shared<IShader> shader);
 
 			Entity(Shared<GLTexturedModel> texturedModel,
-			       Shared<ShaderProgram> shaderProgram,
+			       Shared<IShader> shader,
 			       const vec3 & position,
 			       const vec3 & rotation,
 			       const vec3 & scaling);
@@ -41,28 +41,25 @@ namespace GE
 			void draw() const override;
 
 			// Setters
-			void setShaderProgram(Shared<ShaderProgram> shaderProgram);
+			void setShader(Shared<IShader> shader);
 			void setPosition(const vec3 & position) noexcept;
 			void setRotation(const vec3 & rotation) noexcept;
 			void setScalingFactor(const vec3 & scalingFactor) noexcept;
 
 			// Getters
-			[[nodiscard]] uint getShaderProgramId() const;
-			[[nodiscard]] Shared<GLTexturedModel> getTexturedModel() const;
-			[[nodiscard]] Shared<ShaderProgram>   getShaderProgram() const;
-			[[nodiscard]] const vec3 & getPosition()      const noexcept;
-			[[nodiscard]] const vec3 & getRotation()      const noexcept;
-			[[nodiscard]] const vec3 & getScalingFactor() const noexcept;
+			Shared<GLTexturedModel> getTexturedModel() const;
+			Shared<IShader> getShader() const;
+			const vec3 & getPosition()      const noexcept;
+			const vec3 & getRotation()      const noexcept;
+			const vec3 & getScalingFactor() const noexcept;
 
 		private:
-			Shared<GLTexturedModel> m_texturedModel = nullptr;
-			Shared<ShaderProgram>   m_shaderProgram = nullptr;
+			Shared<GLTexturedModel> m_texturedModel { nullptr };
+			Shared<IShader> m_shader { nullptr };
 
 			vec3 m_position { 0.f };
 			vec3 m_rotation { 0.f };
 			vec3 m_scaling  { 1.f };
-
-			uint m_shaderProgramId { 0 };
 	};
 
 } // GE

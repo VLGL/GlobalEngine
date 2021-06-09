@@ -1,14 +1,13 @@
 #pragma once
 
-#include <exception>
-
 #include "core/Memory.h"
 #include "graphics/IRenderSystem.h"
-#include "graphics/Entity.h"
-#include "graphics/GameScene.h"
 
 namespace GE
 {
+
+	class Camera;
+	class GameScene;
 
 	struct GLRenderProperties
 	{

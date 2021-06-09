@@ -4,45 +4,43 @@ namespace GE
 {
 
 	Entity::Entity(Shared<GLTexturedModel> texturedModel,
-	               Shared<ShaderProgram> shaderProgram) :
+	               Shared<IShader> shader) :
 		m_texturedModel { texturedModel },
-		m_shaderProgram { shaderProgram }
+		m_shader        { shader }
 	{
-		m_shaderProgramId = m_shaderProgram->getId();
+
 	}
 
 	Entity::Entity(Shared<GLTexturedModel> texturedModel,
-	               Shared<ShaderProgram> shaderProgram,
+	               Shared<IShader> shader,
 	               const vec3 & position,
 	               const vec3 & rotation,
 	               const vec3 & scaling) :
 		m_texturedModel { texturedModel },
-		m_shaderProgram { shaderProgram },
+		m_shader        { shader },
 		m_position      { position },
 		m_rotation      { rotation },
 		m_scaling       { scaling }
 	{
-		m_shaderProgramId = m_shaderProgram->getId();
+
 	}
 
 	Entity::Entity(Entity && other) noexcept
 	{
 		// Free resources
 		m_texturedModel.reset();
-		m_shaderProgram.reset();
+		m_shader.reset();
 
 		m_texturedModel = other.m_texturedModel;
-		m_shaderProgram = other.m_shaderProgram;
+		m_shader = other.m_shader;
 
 		// Free resources
 		other.m_texturedModel.reset();
-		other.m_shaderProgram.reset();
+		other.m_shader.reset();
 
 		m_position = std::move(other.m_position);
 		m_rotation = std::move(other.m_rotation);
 		m_scaling  = std::move(other.m_scaling);
-
-		m_shaderProgramId = std::exchange(other.m_shaderProgramId, 0);
 	}
 
 	Entity & Entity::operator=(Entity && other) noexcept
@@ -51,34 +49,26 @@ namespace GE
 		{
 			// Free resources
 			m_texturedModel.reset();
-			m_shaderProgram.reset();
+			m_shader.reset();
 
 			m_texturedModel = other.m_texturedModel;
-			m_shaderProgram = other.m_shaderProgram;
+			m_shader = other.m_shader;
 
 			// Free resources
 			other.m_texturedModel.reset();
-			other.m_shaderProgram.reset();
+			other.m_shader.reset();
 
 			m_position = std::move(other.m_position);
 			m_rotation = std::move(other.m_rotation);
 			m_scaling  = std::move(other.m_scaling);
-
-			m_shaderProgramId = std::exchange(other.m_shaderProgramId, 0);
 		}
 
 		return *this;
 	}
 
-	void Entity::setShaderProgram(Shared<ShaderProgram> shaderProgram)
+	void Entity::setShader(Shared<IShader> shader)
 	{
-		m_shaderProgram = shaderProgram;
-		m_shaderProgramId = m_shaderProgram->getId();
-	}
-
-	unsigned int Entity::getShaderProgramId() const
-	{
-		return m_shaderProgramId;
+		m_shader = shader;
 	}
 
 	Shared<GLTexturedModel> Entity::getTexturedModel() const
@@ -86,16 +76,16 @@ namespace GE
 		return m_texturedModel;
 	}
 
-	Shared<ShaderProgram> Entity::getShaderProgram() const
+	Shared<IShader> Entity::getShader() const
 	{
-		return m_shaderProgram;
+		return m_shader;
 	}
 
 	void Entity::draw() const
 	{
-		m_shaderProgram->apply();
+		m_shader->bind();
 		m_texturedModel->draw();
-		m_shaderProgram->unapply();
+		m_shader->unbind();
 	}
 
 	void Entity::rotate(const vec3 & rotation) noexcept
