@@ -1,9 +1,14 @@
+#include <exception>
+#include <string>
+
+#include <SOIL2.h>
+
 #include "graphics/OpenGL/GLTexture.h"
 
 namespace GE
 {
 
-	GLTexture::GLTexture(const path& texturePath)
+	GLTexture::GLTexture(const Path& texturePath)
 	{
 		const std::string texturePathString = texturePath.native();
 

@@ -20,7 +20,6 @@ namespace GE
 	};
 
 	using namespace boost::signals2;
-	class Camera;
 
 	class GLWindow final : public IWindow
 	{
@@ -45,7 +44,7 @@ namespace GE
 			GLFWwindow * getGLFWwindow() const;
 
 		private:
-			std::unique_ptr<GLFWwindow, GLFWwindowDeleter> m_window;
+			Unique<GLFWwindow, GLFWwindowDeleter> m_window;
 			signal<void(GLFWwindow*, int)> closeWindowSignal;
 			signal<void(const glm::vec3 &)> moveCameraSignal;
 	};

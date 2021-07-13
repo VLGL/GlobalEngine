@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/Memory.h"
 #include "graphics/IRenderSystem.h"
 
 namespace GE

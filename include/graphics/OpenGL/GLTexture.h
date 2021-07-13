@@ -4,20 +4,18 @@
 
 #include <GL/glew.h>
 
-#include <SOIL2.h>
-
 namespace GE
 {
 
 	namespace fs = std::filesystem;
-	using path = std::filesystem::path;
+	using Path = std::filesystem::path;
 
 	class GLTexture final
 	{
 		public:
 			GLTexture() = delete;
 			~GLTexture();
-			explicit GLTexture(const path & texturePath);
+			explicit GLTexture(const Path & texturePath);
 
 			void apply() const;
 			void unapply() const;

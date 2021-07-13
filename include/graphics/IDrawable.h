@@ -6,7 +6,7 @@ namespace GE
 	class IDrawable
 	{
 		public:
-			virtual ~IDrawable() = default;
+			virtual ~IDrawable() = 0;
 
 			virtual void draw() const = 0;
 

@@ -33,12 +33,13 @@ void TestApplication::init()
 		1.0f, 1.0f
 	};
 
-	Shared<Model> cubeModel = Model::ModelBuilder()
-		.addVertexBuffer(vertices, std::size(vertices))
-		.addIndexBuffer(indexes, std::size(indexes))
-		.addTextureData(textCoords, std::size(textCoords))
+	/*
+	Shared<GLModel> cubeModel = GLModel::ModelBuilder()
+		.addVertexBuffer(GLVertexBuffer(vertices, std::size(vertices)))
+		.addIndexBuffer(GLIndexBuffer(indexes, std::size(indexes)))
+		.addTextureBuffer(GLTextureBuffer(textCoords, std::size(textCoords)))
 		.build();
-
+	*/
 	auto wallTexture = createShared<GLTexture>("examples/TestApplication/res/wall.jpg");
 
 	auto cubeTexturedModel =

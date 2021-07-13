@@ -1,15 +1,17 @@
 #include "graphics/OpenGL/GLTexturedModel.h"
+#include "graphics/OpenGL/GLTexture.h"
+#include "graphics/OpenGL/GLModel.h"
 
 namespace GE
 {
 
-	GLTexturedModel::GLTexturedModel(Shared<Model> model,
+	GLTexturedModel::GLTexturedModel(Shared<GLModel> model,
 	                                 Shared<GLTexture> texture) :
 		m_model   { model },
 		m_texture { texture }
 	{ }
 
-	const Shared<Model> & GLTexturedModel::getModel()   const
+	const Shared<GLModel> & GLTexturedModel::getModel()   const
 	{
 		return m_model;
 	}

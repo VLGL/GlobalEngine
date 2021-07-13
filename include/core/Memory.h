@@ -7,8 +7,8 @@
 namespace GE
 {
 
-	template <typename T>
-	using Unique = std::unique_ptr<T>;
+	template <typename T, typename Deleter = std::default_delete<T>>
+	using Unique = std::unique_ptr<T, Deleter>;
 
 	template <typename T>
 	using Shared = std::shared_ptr<T>;

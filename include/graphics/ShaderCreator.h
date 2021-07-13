@@ -31,13 +31,8 @@ namespace GE
 						break;
 
 					case RendererAPI::UNDEFINED:
-						//std::cerr << "Error\n";
-						// Use exception instead
-						break;
-
+					[[fallthrough]];
 					default:
-						//std::cerr << "Error\n";
-						// Use exception instead
 						break;
 				}
 
